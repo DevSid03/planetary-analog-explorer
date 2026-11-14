@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore Earth environments as analogs for lunar and Martian exploration using NASA satellite imagery.">
+  <title>Planetary Analog Explorer</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#">
+        <span class="brand-mark">◉</span>
+        <span><strong>PLANETARY</strong><small>ANALOG EXPLORER</small></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="navigation">
+        <a class="nav-link active" href="#overview"><span>⌂</span> Overview</a>
+        <a class="nav-link" href="#earth-explorer"><span>◎</span> Earth Explorer</a>
+        <a class="nav-link" href="#comparison"><span>⇄</span> Compare Sites</a>
+        <a class="nav-link" href="#data-sources"><span>◈</span> Data Sources</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="mission-card">
+          <span class="eyebrow">MISSION STATUS</span>
+          <div class="status-line"><i class="status-dot"></i> SYSTEM ONLINE</div>
+          <p>Prototype environment<br>NASA imagery connection</p>
+          <span class="mini-tag">GIBS WMS</span>
+        </div>
+        <a class="github-link" href="https://github.com/new" target="_blank" rel="noreferrer">↗ Publish on GitHub</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">RESEARCH PLATFORM <span>/</span> OVERVIEW</div>
+          <h1>Planetary analog dashboard</h1>
+        </div>
+        <div class="topbar-right"><span class="live-indicator"></span> DATA SERVICES READY <span class="avatar">PA</span></div>
+      </header>
+
+      <section class="hero" id="overview">
+        <div class="hero-copy">
+          <div class="eyebrow">EARTH IS OUR LABORATORY</div>
+          <h2>Explore Earth.<br><em>Prepare for other worlds.</em></h2>
+          <p>Discover terrestrial environments that help us investigate the Moon and Mars through satellite imagery and comparative science.</p>
+          <a class="primary-button" href="#earth-explorer">Explore analog sites <span>→</span></a>
+        </div>
+        <div class="hero-orbit" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="planet planet-earth"></div><div class="planet planet-mars"></div>
+          <span class="orbit-label label-earth">EARTH</span><span class="orbit-label label-mars">MARS</span>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card"><span class="stat-icon">⌖</span><span class="stat-label">EARTH ANALOG SITES</span><strong id="site-count">03</strong><small>Initial research locations</small></article>
+        <article class="stat-card"><span class="stat-icon">◌</span><span class="stat-label">TARGET WORLDS</span><strong>02</strong><small>Moon and Mars</small></article>
+        <article class="stat-card"><span class="stat-icon">▧</span><span class="stat-label">IMAGERY PROVIDER</span><strong class="stat-word">NASA GIBS</strong><small>Global satellite imagery service</small></article>
+        <article class="stat-card"><span class="stat-icon">⌁</span><span class="stat-label">API STATUS</span><strong class="status-word" id="api-status">CHECKING</strong><small id="api-detail">Connecting to research API</small></article>
+      </section>
+
+      <section class="section-block" id="earth-explorer">
+        <div class="section-heading">
+          <div><div class="eyebrow">FIELD RECONNAISSANCE</div><h2>Earth analog explorer</h2><p>Select a location to inspect its environment and research relevance.</p></div>
+          <div class="map-controls">
+            <button class="chip active" id="osm-button">OpenStreetMap</button>
+            <button class="chip" id="nasa-button">NASA imagery</button>
+          </div>
+        </div>
+        <div class="explorer-grid">
+          <div class="map-frame"><div id="map"></div><div class="map-caption"><span class="status-dot"></span> INTERACTIVE GLOBAL MAP <span>·</span> SELECT A MARKER</div></div>
+          <aside class="site-panel" id="site-panel">
+            <div class="eyebrow">FEATURED ANALOG</div>
+            <div class="site-planet">MARS ANALOG</div>
+            <h3>Atacama Desert</h3>
+            <p class="site-region">Antofagasta, Chile</p>
+            <div class="site-divider"></div>
+            <div class="detail-label">ENVIRONMENT</div><p>Hyper-arid desert</p>
+            <div class="detail-label">KEY CHARACTERISTICS</div><div class="tag-list"><span>Extreme dryness</span><span>Salt deposits</span><span>Volcanic terrain</span></div>
+            <div class="detail-label">RESEARCH RELEVANCE</div><p>Useful for studying dry-environment geochemistry, instrument testing and the preservation of biosignature analogs.</p>
+            <div class="coordinates" id="site-coordinates">23.5° S · 68.3° W</div>
+          </aside>
+        </div>
+        <div class="site-strip" id="site-list"></div>
+      </section>
+
+      <section class="section-block comparison-section" id="comparison">
+        <div class="section-heading">
+          <div><div class="eyebrow">SCIENTIFIC WORKSPACE</div><h2>Earth ↔ planetary comparison</h2><p>Compare prototype environmental parameters with a selected planetary target.</p></div>
+        </div>
+        <div class="comparison-card">
+          <div class="select-group"><label for="earth-select">EARTH ANALOG</label><select id="earth-select"></select></div>
+          <div class="versus">↔</div>
+          <div class="select-group"><label for="target-select">PLANETARY TARGET</label><select id="target-select"><option value="jezero">Jezero Crater · Mars</option><option value="gale">Gale Crater · Mars</option><option value="shackleton">Shackleton Crater · Moon</option></select></div>
+          <button class="primary-button compare-button" id="compare-button">Run comparison <span>→</span></button>
+        </div>
+        <div class="results-panel" id="comparison-results" aria-live="polite">
+          <div class="empty-state"><span>⇄</span><strong>Awaiting comparison</strong><p>Select two environments and run the comparison to see parameter similarities.</p></div>
+        </div>
+        <p class="science-note">Research note: Version 1 uses illustrative 0–100 parameter values to demonstrate the comparison workflow. They are not measured environmental observations or validated planetary analog scores.</p>
+      </section>
+
+      <section class="section-block sources-section" id="data-sources">
+        <div class="section-heading"><div><div class="eyebrow">OPEN SCIENCE</div><h2>Mission data & references</h2><p>Primary public data services planned for this project.</p></div></div>
+        <div class="source-grid">
+          <a class="source-card" href="https://nasa-gibs.github.io/gibs-api-docs/" target="_blank" rel="noreferrer"><span class="source-symbol">NASA</span><strong>Global Imagery Browse Services</strong><p>Earth satellite imagery and map layers.</p><small>NASA EARTHDATA ↗</small></a>
+          <a class="source-card" href="https://pds.nasa.gov/" target="_blank" rel="noreferrer"><span class="source-symbol">PDS</span><strong>Planetary Data System</strong><p>Planetary mission data archives.</p><small>NASA PDS ↗</small></a>
+          <a class="source-card" href="https://science.nasa.gov/mission/lro/data-products/" target="_blank" rel="noreferrer"><span class="source-symbol">LRO</span><strong>Lunar Reconnaissance Orbiter</strong><p>Lunar imagery and topographic products.</p><small>NASA SCIENCE ↗</small></a>
+        </div>
+      </section>
+      <footer>PLANETARY ANALOG EXPLORER <span>VERSION 0.1.0 · EDUCATIONAL RESEARCH PROTOTYPE</span></footer>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
