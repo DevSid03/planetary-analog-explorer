@@ -22,7 +22,6 @@ app = FastAPI(
 )
 
 
-<<<<<<< HEAD:planetary-analog-explorer-main/planetary-analog-explorer/backend/main.py
 class ElevationError(Exception):
     """Raised when an elevation value cannot be retrieved."""
 
@@ -73,8 +72,57 @@ def _fetch_srtm(lat: float, lon: float) -> float:
     return float(elevation)
 
 
-=======
->>>>>>> origin/main:planetary-analog-explorer/backend/main.py
+
+class ElevationError(Exception):
+    """Raised when an elevation value cannot be retrieved."""
+
+
+@lru_cache(maxsize=512)
+def _fetch_srtm(lat: float, lon: float) -> float:
+    """Look up SRTM 30m elevation. Only successful lookups are cached."""
+
+    params = urllib.parse.urlencode({
+        "locations": f"{lat},{lon}",
+        "interpolation": "bilinear"
+    })
+
+    url = "https://api.opentopodata.org/v1/srtm30m?" + params
+
+    try:
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": "PlanetaryAnalogExplorer/0.1"}
+        )
+
+        with urllib.request.urlopen(request, timeout=15) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+    except urllib.error.HTTPError as error:
+        if error.code == 429:
+            raise ElevationError(
+                "Elevation service is rate-limited. Wait a moment and try again."
+            )
+        raise ElevationError(f"Elevation service error (HTTP {error.code}).")
+    except (urllib.error.URLError, TimeoutError) as error:
+        raise ElevationError(f"Elevation service unavailable: {error}")
+    except ValueError as error:
+        raise ElevationError(f"Invalid elevation response: {error}")
+
+    results = data.get("results") if isinstance(data, dict) else None
+
+    if data.get("status") != "OK" or not results:
+        raise ElevationError("No elevation data available.")
+
+    elevation = results[0].get("elevation")
+
+    if elevation is None:
+        raise ElevationError(
+            "No elevation value here (open water or a no-data cell)."
+        )
+
+    return float(elevation)
+
+
 @app.get("/api/elevation")
 def get_elevation(lat: float, lon: float):
     """
@@ -93,7 +141,6 @@ def get_elevation(lat: float, lon: float):
             "message": "Invalid longitude."
         }
 
-<<<<<<< HEAD:planetary-analog-explorer-main/planetary-analog-explorer/backend/main.py
     try:
         # Round to ~10 m so repeat clicks nearby hit the cache and the
         # public API's rate limit is respected.
@@ -109,62 +156,6 @@ def get_elevation(lat: float, lon: float):
         "dataset": "SRTM 30m",
         "source": "NASA SRTM via Open Topo Data"
     }
-=======
-    params = urllib.parse.urlencode({
-        "locations": f"{lat},{lon}",
-        "interpolation": "bilinear"
-    })
-
-    url = (
-        "https://api.opentopodata.org/v1/srtm30m?"
-        + params
-    )
-
-    try:
-        request = urllib.request.Request(
-            url,
-            headers={"User-Agent": "PlanetaryAnalogExplorer/0.1"}
-        )
-
-        with urllib.request.urlopen(request, timeout=15) as response:
-            data = json.loads(response.read().decode("utf-8"))
-
-        if data.get("status") != "OK" or not data.get("results"):
-            return {
-                "status": "error",
-                "message": "No elevation data available."
-            }
-
-        result = data["results"][0]
-        elevation = result.get("elevation")
-
-        if elevation is None:
-            return {
-                "status": "error",
-                "message": "No elevation value available at this location."
-            }
-
-        return {
-            "status": "success",
-            "latitude": lat,
-            "longitude": lon,
-            "elevation_m": elevation,
-            "dataset": "SRTM 30m",
-            "source": "NASA SRTM via Open Topo Data"
-        }
-
-    except (urllib.error.URLError, TimeoutError) as error:
-        return {
-            "status": "error",
-            "message": f"Elevation service unavailable: {error}"
-        }
-    except (ValueError, KeyError, IndexError) as error:
-        return {
-            "status": "error",
-            "message": f"Invalid elevation response: {error}"
-        }
->>>>>>> origin/main:planetary-analog-explorer/backend/main.py
-
 
 SITES = [
     {
