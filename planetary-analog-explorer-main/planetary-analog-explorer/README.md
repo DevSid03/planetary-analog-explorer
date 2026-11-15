@@ -4,8 +4,9 @@ An interactive Earth–Moon–Mars research dashboard for exploring terrestrial 
 
 > Earth is our laboratory. Space is our destination.
 
-## Version 0.1.0 — MVP
+## Version 0.1.2
 
+- Trinity intro screen: Earth, Mars and Moon rise in, then slide to the centre one by one when you enter the app (add `?intro=0` or a `#section` link to skip it)
 - Dark, responsive research dashboard
 - Interactive Earth map with OpenStreetMap
 - NASA GIBS satellite imagery overlay (WMS)

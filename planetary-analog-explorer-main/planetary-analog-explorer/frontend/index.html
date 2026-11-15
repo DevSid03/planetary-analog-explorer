@@ -7,9 +7,67 @@
   <title>Planetary Analog Explorer</title>
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/intro.css">
+  <script>
+    // Skip the intro when arriving on a section link (#earth-explorer) or with ?intro=0
+    if (location.hash || /[?&]intro=0\b/.test(location.search)) {
+      document.documentElement.classList.add("skip-intro");
+    }
+  </script>
 </head>
 <body>
+  <div class="intro" id="intro" role="dialog" aria-label="Welcome to Trinity">
+    <div class="intro-nebula"></div>
+    <canvas class="intro-stars" id="intro-stars" aria-hidden="true"></canvas>
+
+    <header class="intro-header">
+      <div class="intro-logo">
+        <svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true">
+          <circle cx="24" cy="24" r="11" fill="#fff"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(-35 24 24)"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(35 24 24)"/>
+        </svg>
+        <span>TRINITY</span>
+      </div>
+      <span class="intro-tag">A JOURNEY BEYOND</span>
+    </header>
+
+    <main class="intro-worlds">
+      <article class="world" style="--i:0">
+        <div class="orb"><div class="orb-visual" data-planet="earth"></div></div>
+        <div class="world-text">
+          <div class="world-meta"><span>01 / 03</span><i></i><span>OUR HOME</span></div>
+          <h2>EARTH</h2>
+          <p>Every journey begins at home.</p>
+        </div>
+      </article>
+      <article class="world" style="--i:1">
+        <div class="orb"><div class="orb-visual" data-planet="mars"></div></div>
+        <div class="world-text">
+          <div class="world-meta"><span>02 / 03</span><i></i><span>THE NEXT FRONTIER</span></div>
+          <h2>MARS</h2>
+          <p>Beyond the familiar. Into possibility.</p>
+        </div>
+      </article>
+      <article class="world" style="--i:2">
+        <div class="orb"><div class="orb-visual" data-planet="moon"></div></div>
+        <div class="world-text">
+          <div class="world-meta"><span>03 / 03</span><i></i><span>A NEW PERSPECTIVE</span></div>
+          <h2>MOON</h2>
+          <p>A small step into something greater.</p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="intro-footer">
+      <span class="intro-footer-note">THREE WORLDS. ONE BEGINNING.</span>
+      <button type="button" class="intro-enter" id="intro-enter">ENTER MAIN SITE</button>
+    </footer>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
       <a class="brand" href="#">
@@ -67,14 +125,35 @@
       <section class="section-block" id="earth-explorer">
         <div class="section-heading">
           <div><div class="eyebrow">FIELD RECONNAISSANCE</div><h2>Earth analog explorer</h2><p>Select a location to inspect its environment and research relevance.</p></div>
+<<<<<<< HEAD:planetary-analog-explorer-main/planetary-analog-explorer/frontend/index.html
+          <div class="map-controls" role="toolbar" aria-label="Map layers">
+            <div class="control-group" role="group" aria-label="Base map">
+              <span class="control-label">BASE</span>
+              <button type="button" class="chip active" id="osm-button" aria-pressed="true">Dark basemap</button>
+              <button type="button" class="chip" id="nasa-button" aria-pressed="false">NASA Blue Marble</button>
+            </div>
+            <div class="control-group" role="group" aria-label="Overlays">
+              <span class="control-label">OVERLAYS</span>
+              <button type="button" class="chip" id="viirs-button" aria-pressed="false">Daily imagery</button>
+              <button type="button" class="chip" id="temperature-button" aria-pressed="false">Surface temperature</button>
+            </div>
+=======
           <div class="map-controls">
             <button class="chip active" id="osm-button">Dark Basemap</button>
             <button class="chip" id="nasa-button">NASA imagery</button>
             <button class="chip" id="temperature-button"> Surface temperature</button>
+>>>>>>> origin/main:planetary-analog-explorer/frontend/index.html
           </div>
         </div>
         <div class="explorer-grid">
-          <div class="map-frame"><div id="map"></div><div class="map-caption"><span class="status-dot"></span> INTERACTIVE GLOBAL MAP <span>·</span> SELECT A MARKER</div></div>
+          <div class="map-column">
+            <div class="map-frame"><div id="map"></div><div class="map-caption"><span class="status-dot"></span> INTERACTIVE GLOBAL MAP <span>·</span> CLICK FOR ELEVATION</div></div>
+            <div class="map-output" id="map-output" aria-live="polite">
+              <div class="output-card" id="probe-output"></div>
+              <div class="output-card" id="layer-output"></div>
+              <div class="output-card" id="legend-output"></div>
+            </div>
+          </div>
           <aside class="site-panel" id="site-panel">
             <div class="eyebrow">FEATURED ANALOG</div>
             <div class="site-planet">MARS ANALOG</div>
@@ -119,5 +198,6 @@
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="/static/js/app.js"></script>
+  <script src="/static/js/intro.js"></script>
 </body>
 </html>
