@@ -1,6 +1,11 @@
 from pathlib import Path
 from typing import Dict, List
 
+import json
+import urllib.request
+import urllib.parse
+import urllib.error
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +19,80 @@ app = FastAPI(
     description="Explore terrestrial environments as analogs for lunar and Martian exploration.",
     version="0.1.0",
 )
+
+
+@app.get("/api/elevation")
+def get_elevation(lat: float, lon: float):
+    """
+    Retrieve NASA SRTM 30m elevation through Open Topo Data.
+    """
+
+    if not (-60 <= lat <= 60):
+        return {
+            "status": "error",
+            "message": "SRTM coverage is approximately 60°S to 60°N."
+        }
+
+    if not (-180 <= lon <= 180):
+        return {
+            "status": "error",
+            "message": "Invalid longitude."
+        }
+
+    params = urllib.parse.urlencode({
+        "locations": f"{lat},{lon}",
+        "interpolation": "bilinear"
+    })
+
+    url = (
+        "https://api.opentopodata.org/v1/srtm30m?"
+        + params
+    )
+
+    try:
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": "PlanetaryAnalogExplorer/0.1"}
+        )
+
+        with urllib.request.urlopen(request, timeout=15) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        if data.get("status") != "OK" or not data.get("results"):
+            return {
+                "status": "error",
+                "message": "No elevation data available."
+            }
+
+        result = data["results"][0]
+        elevation = result.get("elevation")
+
+        if elevation is None:
+            return {
+                "status": "error",
+                "message": "No elevation value available at this location."
+            }
+
+        return {
+            "status": "success",
+            "latitude": lat,
+            "longitude": lon,
+            "elevation_m": elevation,
+            "dataset": "SRTM 30m",
+            "source": "NASA SRTM via Open Topo Data"
+        }
+
+    except (urllib.error.URLError, TimeoutError) as error:
+        return {
+            "status": "error",
+            "message": f"Elevation service unavailable: {error}"
+        }
+    except (ValueError, KeyError, IndexError) as error:
+        return {
+            "status": "error",
+            "message": f"Invalid elevation response: {error}"
+        }
+
 
 SITES = [
     {
@@ -151,3 +230,13 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 @app.get("/")
 def home():
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+
+
+
+
+
+
+
+
